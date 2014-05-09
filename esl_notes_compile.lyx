@@ -1,0 +1,1963 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding utf8
+\fontencoding global
+\font_roman 黑体
+\font_sans 仿宋
+\font_typewriter 楷体
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+≪统计学习精要(TheElementsofStatisticalLearning)≫课堂笔记
+\end_layout
+
+\begin_layout Section
+Oct12
+\end_layout
+
+\begin_layout Standard
+\align left
+前两天微博上转出来的，复旦计算机学院的吴立德吴老师在开
+\emph on
+《统计学习精要(TheElementsofStatisticalLearning)
+\emph default
+》这门课，还在张江...大牛的课怎能错过，果断请假去蹭课...为了减轻心理压力，还拉了一帮同事一起去听，eBay浩浩荡荡的十几人杀过去好不壮观！总感觉我们的人有超过复旦本身
+学生的阵势，五六十人的教室坐的满满当当，壮观啊。
+\end_layout
+
+\begin_layout Standard
+\align left
+这本书正好前阵子一直在看，所以才会屁颠屁颠的跑过去听。确实是一本深入浅出讲dataminingmodels的好书。作者网站上提供免费的电子版下载，爽！
+\begin_inset CommandInset href
+LatexCommand href
+name "http://www-stat.stanford.edu/~tibs/ElemStatLearn/"
+target "http://www-stat.stanford.edu/~tibs/ElemStatLearn/"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align left
+从这周开始，如无意外我会每周更新课堂笔记。另一方面，也会加上自己的一些理解和实际工作中的感悟。此外，对于datamining感兴趣的，也可以去coursera听
+课~貌似这学期开的machinelearning评价不错。我只在coursera上从众选了一门「ModelThinking」，相对来说比较简单，但是相当的优雅！
+若有时间会再写写这门课的上课感受。笔记我会尽量用全部中文，但只是尽量...
+\end_layout
+
+\begin_layout Standard
+\align left
+------------课堂笔记开始--------
+\end_layout
+
+\begin_layout Standard
+\align left
+第一次上课，主要是导论，介绍这个领域的关注兴趣以及后续课程安排。对应本书的第一章。
+\end_layout
+
+\begin_layout Standard
+\align left
+1.统计学习是？从数据中学习知识。简单地说，我们有一个想预测的结果(outcome)，记为
+\begin_inset Formula $Y$
+\end_inset
+
+，可能是离散的也可能是连续的。同时，还有一些观察到的特征(feature)，记为
+\begin_inset Formula $X$
+\end_inset
+
+，
+\begin_inset Formula $X$
+\end_inset
+
+既可能是一维的也可能是多维的。对于每一个观测个体，我们都会得到一个行向量
+\begin_inset Formula $(x_{1},...,x_{p})$
+\end_inset
+
+，对应它的p个特征的观测值，以及一个观测到的结果值
+\begin_inset Formula $y$
+\end_inset
+
+。如果总共有
+\begin_inset Formula $N$
+\end_inset
+
+个个体，那么我们对于每个个体都会得到这些值，则有
+\begin_inset Formula $(y_{1},...,y_{n})_{T}$
+\end_inset
+
+为观测结果的列向量以及
+\begin_inset Formula $X(n*p)$
+\end_inset
+
+矩阵。这样的数据称之为训练数据集（trainingset）。这里更多是约定一些notation.
+\end_layout
+
+\begin_layout Standard
+\align left
+2.统计学习分类？一般说来，我们有个观测到的结果
+\begin_inset Formula $Y$
+\end_inset
+
+，然后找到一个适合的模型根据
+\begin_inset Formula $X$
+\end_inset
+
+预测
+\begin_inset Formula $Y$
+\end_inset
+
+，这样的称之为有监督的学习（supervisedlearning）。而有些时候，
+\begin_inset Formula $Y$
+\end_inset
+
+是无法观测到的，那么只是通过
+\begin_inset Formula $X$
+\end_inset
+
+来学习，称之为无监督的学习（unsupervisedlearning）。这本书主要侧重有监督的学习。
+\end_layout
+
+\begin_layout Standard
+\align left
+3.回归和分类器。这个主要和
+\begin_inset Formula $Y$
+\end_inset
+
+有关。如果
+\begin_inset Formula $Y$
+\end_inset
+
+为离散，比如红黄蓝不同颜色，则称之为分类器（学习模型）；反之，若
+\begin_inset Formula $Y$
+\end_inset
+
+为连续，比如身高，则称之为回归（学习模型）。这里更多只是称谓上的区别。
+\end_layout
+
+\begin_layout Standard
+\align left
+4.统计学习的任务？预测。通过什么来预测？学习模型（learningmodels）。按照什么来学习？需要一定的准则，比如最小均方误差MSE，适用于分类器的0-1准
+则等。基于这些准则、优化过的实现方法称之为算法。
+\end_layout
+
+\begin_layout Standard
+\align left
+5.统计学习举例？
+\end_layout
+
+\begin_layout Standard
+\align left
+分类器：依据邮件发信人、内容、标题等判断是否为垃圾邮件；
+\end_layout
+
+\begin_layout Standard
+\align left
+回归：前列腺特异抗原(PSA)水平与癌症等因素的关系；
+\end_layout
+
+\begin_layout Standard
+\align left
+图形识别：手写字母的识别；
+\end_layout
+
+\begin_layout Standard
+\align left
+聚类：根据DNA序列判断样本的相似性，如亲子鉴定。
+\end_layout
+
+\begin_layout Standard
+\align left
+6.课程安排顺序？
+\end_layout
+
+\begin_layout Standard
+\align left
+第二章，是对于有监督的学习模型的概览。
+\end_layout
+
+\begin_layout Standard
+\align left
+第三章和第四章将讨论线性回归模型和线性分类器。
+\end_layout
+
+\begin_layout Standard
+\align left
+第五章将讨论广义线性模型（GLM）。
+\end_layout
+
+\begin_layout Standard
+\align left
+第六章涉及kernel方法和局部回归。
+\end_layout
+
+\begin_layout Standard
+\align left
+第七章是模型评价与选择。
+\end_layout
+
+\begin_layout Standard
+\align left
+第八章是测侧重算法，比如最大似然估计，bootstrap等。本学期预计讲到这里。所以后面的我就暂时不列出了。
+\end_layout
+
+\begin_layout Standard
+\align left
+目测第二节开始将变得越来越难，前阵子自学第二章痛苦不已啊...一个LASSO就折磨了我好久。当时的读书笔记见：
+\begin_inset CommandInset href
+LatexCommand href
+name "降维模型若干感悟"
+target "http://www.loyhome.com/%e9%99%8d%e7%bb%b4%e6%a8%a1%e5%9e%8b%e8%8b%a5%e5%b9%b2%e6%84%9f%e6%82%9f/"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align left
+--------10.15补充---------
+\end_layout
+
+\begin_layout Standard
+\align left
+上周写的时候只是凭着记忆，笔记没在身边。今天重新翻了翻当时记下的课堂笔记，再补充一些吧。
+\end_layout
+
+\begin_layout Standard
+\align left
+第九章是可加模型，即
+\begin_inset Formula $f(x_{1},...,x_{p})=f(x_{1})+...+f(x_{p})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align left
+第十章是boosting模型
+\end_layout
+
+\begin_layout Standard
+\align left
+第十一章讨论神经网络
+\end_layout
+
+\begin_layout Standard
+\align left
+第十二章讨论支持向量机(SupportVectorMachine)
+\end_layout
+
+\begin_layout Standard
+\align left
+第十三章设计原型方法(Prototype)
+\end_layout
+
+\begin_layout Standard
+\align left
+第十四章从有监督的学习转到无监督的学习（即有
+\begin_inset Formula $X$
+\end_inset
+
+有
+\begin_inset Formula $Y$
+\end_inset
+
+
+\begin_inset Formula $\rightarrow$
+\end_inset
+
+有
+\begin_inset Formula $X$
+\end_inset
+
+无
+\begin_inset Formula $Y$
+\end_inset
+
+）
+\end_layout
+
+\begin_layout Standard
+\align left
+第十五章讨论随机森林模型（RandomForest）
+\end_layout
+
+\begin_layout Standard
+\align left
+第十六章是集群学习
+\end_layout
+
+\begin_layout Standard
+\align left
+第十七章结构图模型
+\end_layout
+
+\begin_layout Standard
+\align left
+第十八章高维问题（我最近一直念叨的curseofdimensionality...今年搞笑诺贝尔奖也多少与此有关，见
+\begin_inset CommandInset href
+LatexCommand href
+name "http://www.guokr.com/article/344117/"
+target "http://www.guokr.com/article/344117/"
+
+\end_inset
+
+，还有一篇
+\begin_inset CommandInset href
+LatexCommand href
+name "相关的paper"
+target "http://cver.upei.ca/files/cver/04_Astrological%20associations%20and%20illness_jce.pdf"
+
+\end_inset
+
+）
+\end_layout
+
+\begin_layout Standard
+\align left
+ps.吴老师对于随机森林等等模型的评论也挺有意思的，大致是，大家都没搞清随机森林为什么效果这么好...而且这一类模型都是computatoinalintensive的，
+即有一个非常简单的idea然后借助大量的计算来实现。此外，这类方法更多有“猜”的感觉，无法知道来龙去脉，在现实中显得不那么intuitive...（不像econome
+trics那般致力于causality呢）。
+\end_layout
+
+\begin_layout Section
+Oct19
+\end_layout
+
+\begin_layout Standard
+\align left
+继续一周一次的课堂笔记:D
+\end_layout
+
+\begin_layout Standard
+\align left
+昨天去晚了站着听讲，感觉好好啊，注意各种集中。想想整个教室里面就是我和老师是站着的，自豪感油然而生。
+\end_layout
+
+\begin_layout Standard
+\align left
+第二次课讲的东西依旧比较简单，是这本书第二章的前半部分。作为一个好久之前已经预习过的孩子，我表示万分的得意（最小二乘法难道不是三四年前就学过的？话说以后我再面人
+的时候，就让他推导最小二乘估计量，嘻嘻...考验一下基本功）。
+\end_layout
+
+\begin_layout Standard
+\align left
+------------原谅我的废话，笔记开始------------
+\end_layout
+
+\begin_layout Subsection
+简单预测方法：最小二乘法（以下沿用计量经济学的习惯，简称OLS）
+\end_layout
+
+\begin_layout Standard
+\align left
+OLS实在是太普遍了，我就不赘述细节了。OLS的思想就是，基于已有的样本信息，找出一条直线，让预测值与真实值之间的残差平方和最小，即
+\begin_inset Formula $∑_{n}(y−\hat{y})^{2}$
+\end_inset
+
+最小。其中，
+\begin_inset Formula $y$
+\end_inset
+
+为真实的样本观测值（已有样本），而
+\begin_inset Formula $\hat{y}$
+\end_inset
+
+是OLS的预测值。用图来讲的话，
+\begin_inset Formula $X$
+\end_inset
+
+为一维向量的时候，就是用一条直线来最好的拟合各个样本点。
+\end_layout
+
+\begin_layout Standard
+\align left
+这里就很明显了，首先OLS假设是一条直线。那么就是一个参数模型，即我们需要假设一个未知的参数
+\begin_inset Formula $β$
+\end_inset
+
+，构成一个线性方程
+\begin_inset Formula $y=βx$
+\end_inset
+
+，然后再去估计β的值。然后呢，直线会有很多条，所以我们要找到一个目标——比如这里，就是最小化残差平方和RSS。换言之，我们寻找的就是最优的向量
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+使得RSS最小。
+\end_layout
+
+\begin_layout Standard
+\align left
+解这个最优化问题很简单，我就不重复了。最后解得的最优估计量为：
+\end_layout
+
+\begin_layout Standard
+\align left
+\begin_inset Formula 
+\[
+\hat{\beta}=(X'X)^{-1}X'Y
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align left
+这里写成矩阵形式，比较简单。
+\begin_inset Formula $X$
+\end_inset
+
+为一维向量的时候，可以改写成
+\begin_inset Formula $∑$
+\end_inset
+
+形式，我个人不大喜欢，就不展开了。
+\end_layout
+
+\begin_layout Subsection
+简单预测方法：K近邻（k nearest neighbor）
+\end_layout
+
+\begin_layout Standard
+\align left
+K近邻的思想就更简单了。不就是想预测某个点x对应的y么？那么就把它的邻居都找来，平均一下好了。不是有句话叫做什么“一个人的收入就大概是他的圈子收入的平均值么？”
+\end_layout
+
+\begin_layout Standard
+\align left
+所以
+\begin_inset Formula $\hat{y}=mean(y_{i}|x_{i}\in N_{k}(x))$
+\end_inset
+
+，这里
+\begin_inset Formula $N_{k}(x)$
+\end_inset
+
+表示点
+\begin_inset Formula $x$
+\end_inset
+
+的K近邻。至于这个近邻怎么定义嘛，嘻嘻，很简单啊，欧几里德距离就可以嘛~
+\end_layout
+
+\begin_layout Standard
+\align left
+评语：吴老师对于这两个算法的直观评价是，OLS呢就是勤奋的学生，预测前先做足功课，预测的时候只要知道X，噼里啪啦一下子y就估计出来了。然而knn则是一个临时抱佛
+脚的学生，预测的时候开始找自己的k近邻，然后把它们平均一下就好了。哈哈，大意如此，大家可以体会一下这种精神。我个人感觉呢，OLS属于以不变应万变的，而knn则是
+见机行事的。
+\end_layout
+
+\begin_layout Subsection
+统计决策理论(Statistical Decision Theory)
+\end_layout
+
+\begin_layout Standard
+\align left
+说了这么多，这个模型好不好到底怎么判读呢？凡事总得有个标准呢。这一系列的标准或者说准则，就是统计决策理论了。
+\end_layout
+
+\begin_layout Standard
+\align left
+首先呢，大致我们需要对X,Y有个分布上的描述：用
+\begin_inset Formula $P(X,Y)$
+\end_inset
+
+记作向量
+\begin_inset Formula $(X,Y)$
+\end_inset
+
+的联合分布，然后
+\begin_inset Formula $p(X,Y)$
+\end_inset
+
+为其对应的密度函数。之后为了估计Y，我们会有很多很多模型，即各种
+\begin_inset Formula $f(X)$
+\end_inset
+
+，而这些
+\begin_inset Formula $f(X)$
+\end_inset
+
+组成的函数空间记为
+\begin_inset Formula $F$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\align left
+然后我们定义一个损失函数，比如在均方误差意义下，
+\begin_inset Formula $\mathcal{L}(Y,f(X)=(Y-f(X))^{2}$
+\end_inset
+
+，这样就有了一个选择的标准——使得损失函数的期望最小：
+\begin_inset Formula $EPE(f)=E(Y-f(X))^{2}=\int[y-f(x)]^{2}P(dx,dy)$
+\end_inset
+
+。接下来就是，到底在
+\begin_inset Formula $F$
+\end_inset
+
+空间里面，哪一个
+\begin_inset Formula $f$
+\end_inset
+
+最符合这个标准呢？
+\end_layout
+
+\begin_layout Standard
+\align left
+首先自然是把联合分布变为条件分布。这个idea显而易见——我们总是知道X的（原谅我吧，全中文确实比较难写，偶尔穿插英文一下 ^_^）。所以conditional
+ on X，我们就有了
+\end_layout
+
+\begin_layout Standard
+\align left
+\begin_inset Formula 
+\[
+EPE(f)=\int[y-f(x)]^{2}P(dx,dy)=\intop_{x}\left\{ \intop_{y}[y-f(x)]^{2}p(y|x)dy\right\} p(x)dx
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align left
+去解最小化问题，最终我们得到的就是在每个点
+\begin_inset Formula $X$
+\end_inset
+
+上，
+\begin_inset Formula $f(X)=E(y|X=x)$
+\end_inset
+
+。通俗的讲就是，对于每个点预测，把和它X向量取值一样的样本点都找出来，然后取他们的平均值就可以了。很直观的不是么？这里也有点最大似然的想法呢——比如预测一个男孩
+的身高，最保险的就是把和它同龄的其他男孩的身高平均一下，不是么？
+\end_layout
+
+\begin_layout Standard
+\align left
+但是说来简单啊，很多时候
+\begin_inset Formula $P(X,Y)$
+\end_inset
+
+都是未知的，根本无法计算嘛。所以只能近似：
+\end_layout
+
+\begin_layout Itemize
+\align left
+回忆一下knn，就是放松了两点：1) 
+\begin_inset Formula $x_{k}$
+\end_inset
+
+取的是
+\begin_inset Formula $x$
+\end_inset
+
+的近邻，而不一定是
+\begin_inset Formula $x$
+\end_inset
+
+； 2)用样本平均数代替了期望 
+\end_layout
+
+\begin_layout Itemize
+\align left
+而OLS呢，也是最后在
+\begin_inset Formula $E(\beta)=E[(X'X)^{-1}X'Y]$
+\end_inset
+
+这里，用样本平均代替了期望。
+\end_layout
+
+\begin_layout Standard
+\align left
+近似嘛，自然有好的近似和不好的近似。很显然的，当样本比较大、尤其是比较密集的时候，x的邻居应该都离x很近，所以这个误差可以减小；此外，当样本很大的时候，根据大数
+定律，平均数收敛于期望。所以，这两种算法应该说，都在大样本下会有更好的效果。
+\end_layout
+
+\begin_layout Subsection
+模型选择、训练误差与测试误差、过拟合
+\end_layout
+
+\begin_layout Standard
+\align left
+这里讲的比较简单。模型选择就是
+\begin_inset Formula $F$
+\end_inset
+
+的选择，即选择哪一类函数空间
+\begin_inset Formula $F$
+\end_inset
+
+，然后再其中找估计最优的
+\begin_inset Formula $f(X)$
+\end_inset
+
+。很显然，如果只有若干个有限的样本，我们总能把各个样本用直线或者曲线依次连起来，这样的话就有无数个
+\begin_inset Formula $f$
+\end_inset
+
+可以作为此问题的解。显然这不是我们想要的——这样的称为“不设定问题”，即可能无解、可能多个解、还可能因为一点点
+\begin_inset Formula $X$
+\end_inset
+
+的变化导致整个解的解答变化。因此我们需要先设定一个解的类别。
+\end_layout
+
+\begin_layout Standard
+\align left
+训练误差：预测模型估计值与训练数据集之间的误差。RSS就是一个典型的训练误差组成的残差平方和。
+\end_layout
+
+\begin_layout Standard
+\align left
+测试误差：用训练集以外的测试数据集带来的误差，显然我们更关心的是测试误差——训练总能训练的很好，让损失函数期望最小，然而测试集则不一定这样。一般说来，测试误差>
+训练误差。
+\end_layout
+
+\begin_layout Standard
+\align left
+过拟合：选择一个很复杂的
+\begin_inset Formula $f$
+\end_inset
+
+，使得训练误差很小，而实际的测试误差不一定小。最极端的就是刚才说的，把训练集的点一个个依次连起来...训练误差肯定是0是不是？
+\end_layout
+
+\begin_layout Standard
+\align left
+我们关心的自然是怎么降低测试误差。显然这东西会跟训练误差有关，但是它还跟
+\begin_inset Formula $f$
+\end_inset
+
+的复杂度有关。最最棘手的就是，
+\begin_inset Formula $f$
+\end_inset
+
+的复杂度是一个难以衡量的问题。早期的研究有用自由度来衡量这个复杂度的，但是也不是那么的靠谱...后面的有人鼓捣出来PAC(使得近似正确的概率最大——吴老师原话)，还有
+一个VC来衡量复杂度——但几乎实践中无法计算，没几个计算出来的。嗯，水很深哇。
+\end_layout
+
+\begin_layout Section
+Oct 26
+\end_layout
+
+\begin_layout Standard
+\align left
+照例文章第一段跑题，先附上个段子（转载的哦~）：
+\end_layout
+
+\begin_layout Quotation
+\align left
+I hate CS people.
+ They don't know linear algebra but want to teach projective geometry.
+ They don't know any probability but want to use graphical models.
+ They don't understand stats at all but still do machine learning like crazy.
+ 
+\end_layout
+
+\begin_layout Standard
+\align left
+喵，最近被问了好几次machine learning 和statistical learning的区别在哪里，我觉得大致如上吧。这也是为什么，对后面这个词我的好
+感稍稍好于前面那个的原因...科学总是有意义的嘛，不能总是依靠强力乱猜是不是嘛。
+\end_layout
+
+\begin_layout Standard
+\align left
+免责声明：以下个人见解部分局限于我个人的见识和思考范围，不适用于所有场景。请大家弃糟粕取精华，不可一言全信之。
+\end_layout
+
+\begin_layout Standard
+\align left
+-------------笔记+随想开始------------
+\end_layout
+
+\begin_layout Subsection
+高维空间问题
+\end_layout
+
+\begin_layout Standard
+\align left
+这一段主要是说大名鼎鼎的＂维数灾难＂。我们都知道有两个数字决定着OLS中X矩阵的大小，这就是观测数目
+\begin_inset Formula $N$
+\end_inset
+
+和观测变量的个数
+\begin_inset Formula $p$
+\end_inset
+
+。一般说来，我们都喜欢
+\begin_inset Formula $N$
+\end_inset
+
+比较大，这样可以很容易的应用大数定律什么的。然而对于
+\begin_inset Formula $p$
+\end_inset
+
+，却是既爱又恨—我们当然喜欢可以观察到个体的很多个特征，但是所谓＂乱花渐欲迷人眼＂，特征越多噪音也越多，搞不好预测的时候就会有麻烦（关于变量的选择问题，应该是下
+一节课的内容。心急的可以先看看我以前的一篇
+\begin_inset CommandInset href
+LatexCommand href
+name "自学笔记"
+target "http://www.loyhome.com/%e9%99%8d%e7%bb%b4%e6%a8%a1%e5%9e%8b%e8%8b%a5%e5%b9%b2%e6%84%9f%e6%82%9f/"
+
+\end_inset
+
+）。
+\end_layout
+
+\begin_layout Standard
+\align left
+为什么维数增多的时候会麻烦呢？这里主要是随着维数增多带来的高维空间数据稀疏化问题。简单地说：
+\end_layout
+
+\begin_layout Itemize
+\align left
+p=1，则单位球(简化为正值的情况）变为一条[0,1]之间的直线。如果我们有N个点，则在均匀分布的情况下，两点之间的距离为1/N。其实平均分布和完全随机分布的两
+两点之间平均距离这个概念大致是等价的，大家可稍微想象一下这个过程。
+\end_layout
+
+\begin_layout Itemize
+\align left
+p=2，单位球则是边长为1的正方形，如果还是只有N个点，则两点之间的平均距离为
+\begin_inset Formula $\frac{1}{\sqrt{N}}$
+\end_inset
+
+。换言之，如果我们还想维持两点之间平均距离为1/N，那么则需
+\begin_inset Formula $N^{2}$
+\end_inset
+
+个点。
+\end_layout
+
+\begin_layout Itemize
+\align left
+以此类题，在p维空间，N个点两两之间的平均距离为
+\begin_inset Formula $N^{-1/p}$
+\end_inset
+
+，或者需要
+\begin_inset Formula $N^{p}$
+\end_inset
+
+个点来维持1/N的平均距离。
+\end_layout
+
+\begin_layout Standard
+\align left
+由此可见，高维空间使得数据变得更加稀疏。这里有一个重要的定理：
+\begin_inset Formula $N$
+\end_inset
+
+个点在
+\begin_inset Formula $p$
+\end_inset
+
+为单位球内随机分布，则随着
+\begin_inset Formula $p$
+\end_inset
+
+的增大，这些点会越来越远离单位球的中心，转而往外缘分散。这个定理源于各点距单位球中心距离的中间值计算公式：
+\end_layout
+
+\begin_layout Standard
+\align left
+\begin_inset Formula 
+\[
+d(p,N)=(1-2^{1/N})^{1/p}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align left
+当
+\begin_inset Formula $p\rightarrow\infty$
+\end_inset
+
+时，
+\begin_inset Formula $d(p,N)\rightarrow1$
+\end_inset
+
+。（很显然，当
+\begin_inset Formula $N$
+\end_inset
+
+变大时，这个距离趋近于0。直观的理解就是，想象我们有一堆气体分子，
+\begin_inset Formula $p$
+\end_inset
+
+变大使得空间变大，所以这些分子开始远离彼此；而
+\begin_inset Formula $N$
+\end_inset
+
+变大意味着有更多气体分子进来，所以两两之间难免更挤一些。看过《三体》的，大概会觉得这个很熟悉的感觉吧...四维空间下的＂水滴＂再也不完美的无懈可击，而一张一维的纸片就
+毁灭了整个地球呢。）
+\end_layout
+
+\begin_layout Standard
+\align left
+这个距离公式的推导就暂时不写了，好麻烦...大致是利用了各个点独立同分布的特性（完全随机情况下），把median距离变为以1/2概率大于中位数的概率集合公式，再进一步
+展开为单点距离累乘公式。
+\end_layout
+
+\begin_layout Standard
+\align left
+比如当
+\begin_inset Formula $p=10$
+\end_inset
+
+, 
+\begin_inset Formula $N=500$
+\end_inset
+
+的时候， 
+\begin_inset Formula $d(p,N)$
+\end_inset
+
+约为0.52，也就意味着有一半多的点离中心的距离大于1/2。
+\end_layout
+
+\begin_layout Standard
+\align left
+高维问题为什么是问题呢？回顾一下
+\begin_inset Formula $K$
+\end_inset
+
+近邻算法，我们用
+\begin_inset Formula $x$
+\end_inset
+
+的邻居来代替
+\begin_inset Formula $x$
+\end_inset
+
+，这样就希望他的邻居们不要离他太远。显然高维空间使得点和点之间越来越远。所以说，
+\begin_inset Formula $knn$
+\end_inset
+
+更适合小
+\begin_inset Formula $p$
+\end_inset
+
+大
+\begin_inset Formula $N$
+\end_inset
+
+即低维多观测量的情况，而在高维空间下可能会变得很麻烦。
+\end_layout
+
+\begin_layout Standard
+\align left
+这样，statistical learning的主要两个问题就总结完了：
+\end_layout
+
+\begin_layout Itemize
+\align left
+过拟合：为了控制预测误差，我们要选择适合的函数类。
+\end_layout
+
+\begin_layout Itemize
+\align left
+高维空间：随着维数的增多，我们面临着维数灾难。这对很多算法都有波及，主要体现在高维数据稀疏化。
+\end_layout
+
+\begin_layout Subsection
+回归的线性方法
+\end_layout
+
+\begin_layout Standard
+\align left
+这里主要是一些linear regression的东西，作为被计量经济学折磨了这么多年的孩子，我表示很淡定...此外还加上我们俗称的generalized
+ linear models，即GLM。一些线性变换而已，无伤大雅。
+\end_layout
+
+\begin_layout Standard
+\align left
+这里一定要强调的是，在这里我们亲爱的X居然不是
+\series bold
+随机变量
+\series default
+！多大的一个坑啊，我就华丽丽的掉下去了还问老师为什么无偏性不需要假设均值独立什么的...
+\begin_inset Formula $X$
+\end_inset
+
+不是随机变量意味着什么呢？
+\begin_inset Formula $X$
+\end_inset
+
+是人为设定或者决定的，比如我一天浇
+\begin_inset Formula $200ml$
+\end_inset
+
+或者
+\begin_inset Formula $500ml$
+\end_inset
+
+水，然后看对于植物生长的影响。当时我真的是想＂一口老血喷出来＂，这也太舒服了吧！要知道大多数情况下
+\begin_inset Formula $X$
+\end_inset
+
+也是随机变量哇，比如身高体重什么的。如果它不是随机变量而只有扰动项是独立的随机变量的话，整个计量经济学怕是要删掉好多篇幅了呢。我想说的只有，这群搞statist
+ical learning的好幸福...
+\end_layout
+
+\begin_layout Standard
+\align left
+\begin_inset Formula $X$
+\end_inset
+
+不是随机变量的时候，为了满足无偏性的假设，只需要扰动项不相关且期望方差存在就可以了。期望不为0不要紧，回归的时候放进去常数项就可以了。
+\end_layout
+
+\begin_layout Standard
+\align left
+此外，对于任意一个正定阵W，我们都可以直接在回归方程两边乘以
+\begin_inset Formula $W$
+\end_inset
+
+，从而
+\begin_inset Formula $\hat{\beta}=(X'W'WX)^{-1}X'W'Y$
+\end_inset
+
+。也就是说，我们可以给
+\begin_inset Formula $X$
+\end_inset
+
+进行加权处理，加权矩阵
+\begin_inset Formula $W$
+\end_inset
+
+之后可以进行新的OLS估计，且可能会有对应的优良性质。加权最小二乘法我就不在这里复习了，学过计量的应该很熟悉，比如处理异方差什么的。
+\end_layout
+
+\begin_layout Standard
+\align left
+再就是我们可以给
+\begin_inset Formula $\beta$
+\end_inset
+
+加上一些约束条件，这样的话最小化问题后面就可以简单的使用拉格朗日乘子法来解。
+\end_layout
+
+\begin_layout Standard
+\align left
+这次的收获之一就是OLS估计量的计算。在实践中，我们计算OLS估计值并不是直接使用
+\begin_inset Formula $\hat{\beta}=(X'X)^{-1}X'Y$
+\end_inset
+
+，而是会事先进行QR分解（利用特征值来算）。即，我们把X分解为化为正交（酉）矩阵Q与实（复）上三角矩阵R的乘积。这样一来，
+\end_layout
+
+\begin_layout Standard
+\align left
+\begin_inset Formula 
+\[
+\hat{\beta}=(X'X)^{-1}X'Y=(R'Q'QR)^{-1}R'Q'Y=R^{-1}(Q'Y)
+\]
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+\align left
+这样可解
+\begin_inset Formula $R\beta=Q'Y$
+\end_inset
+
+，计算时候的稳定性比直接求逆矩阵来的好很多，因为计算机必竟有数字长度的限制，各种位数带来的精度损耗最后会累积到估计量上。
+\end_layout
+
+\begin_layout Standard
+\align left
+最后就是高斯-马尔科夫定理，就是我们常说的BLUE估计量。我就直接拷贝这个定理了：
+\end_layout
+
+\begin_layout Quotation
+\align left
+在误差零均值，同方差，且互不相关的线性回归模型中，回归系数的最佳无偏线性估计（BLUE）就是最小方差估计。一般而言，任何回归系数的线性组合的最佳无偏线性估计就是
+它的最小方差估计。在这个线性回归模型中，误差既不需要假定正态分布，也不需要假定独立（但是需要不相关这个更弱的条件），还不需要假定同分布。
+\end_layout
+
+\begin_layout Standard
+\align left
+进一步的，如果假设扰动项服从正态分布，比如白噪声，那么
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+的估计值也服从正态分布，
+\begin_inset Formula $y$
+\end_inset
+
+的预测值也服从正态分布，因此可以直接做一系列基于正态分布的假设检验。特别的，在大样本情况下，就算扰动项不是正态分布，我们也还是可以利用大数定律和中心极限定理...事实
+上一般也是这么做的。
+\end_layout
+
+\begin_layout Standard
+\align left
+本节课到此结束。老师没有一一推导无偏性最小方差这些性质，我倒是觉得对回归方法感兴趣的还是直接去看计量经济学吧。这东西水还是蛮深的。
+\end_layout
+
+\begin_layout Section
+Nov 2
+\end_layout
+
+\begin_layout Standard
+\align left
+照例继续本周笔记。这次我没啥废话了...
+\end_layout
+
+\begin_layout Standard
+\align left
+--------------笔记开始---------------
+\end_layout
+
+\begin_layout Subsection
+投影矩阵与消灭矩阵
+\end_layout
+
+\begin_layout Standard
+\align left
+首先是上次没证的若干OLS性质。基本都是公式。我就照抄原来econometrics做的笔记了。权当复习了...对计量有兴趣的、线性代数还不错的，建议去看《
+\begin_inset CommandInset href
+LatexCommand href
+name "Microeconometrics- Methods and Applications"
+target "http://book.douban.com/subject/2221578"
+
+\end_inset
+
+》（A.
+ Colin Cameron / Pravin K.
+ Trivedi ）。
+\end_layout
+
+\begin_layout Standard
+\align left
+先定义两个矩阵，这两个矩阵会在某种程度上save your life while learning econometrics...投影矩阵和消灭矩阵。
+\end_layout
+
+\begin_layout Standard
+\align left
+复习一下，OLS估计量是
+\begin_inset Formula $\hat{\beta}=(X'X)^{-1}X'Y$
+\end_inset
+
+，然后对应的Y估计量是
+\begin_inset Formula $\hat{Y}=X\hat{\beta}=X(X'X)^{-1}X'Y$
+\end_inset
+
+。所以，我们定义投影矩阵P为
+\begin_inset Formula $P=X(X'X)^{-1}X'$
+\end_inset
+
+，这样就有了
+\begin_inset Formula $\hat{Y}=PY$
+\end_inset
+
+。也就是说，我们对
+\begin_inset Formula $Y$
+\end_inset
+
+进行了一次投影，然后得到了一个估计值。当然定义投影矩阵并不仅仅是写起来比那堆
+\begin_inset Formula $X$
+\end_inset
+
+简单，而是投影矩阵本身有着一系列良好的性质。
+\end_layout
+
+\begin_layout Standard
+\align left
+我们先来看把
+\begin_inset Formula $P$
+\end_inset
+
+投在
+\begin_inset Formula $X$
+\end_inset
+
+上会怎么样。显然，
+\begin_inset Formula $PX=X(X'X)^{-1}X'X=X$
+\end_inset
+
+，也就是说
+\begin_inset Formula $P$
+\end_inset
+
+不会改变
+\begin_inset Formula $X$
+\end_inset
+
+的值（本来就是把一个东西投到
+\begin_inset Formula $X$
+\end_inset
+
+上嘛~自己投自己怎么会有变化的嘛）。
+\end_layout
+
+\begin_layout Standard
+\align left
+然后呢，对
+\begin_inset Formula $P$
+\end_inset
+
+进行转置，则
+\begin_inset Formula $P'=(X(X'X)^{-1}X')'=P$
+\end_inset
+
+，所以接下来
+\begin_inset Formula $P^{2}=P'P=X(X'X)^{-1}X'X(X'X)^{-1}X'=P$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\align left
+再定义消灭矩阵
+\begin_inset Formula $M$
+\end_inset
+
+。很简单，我们定义
+\begin_inset Formula $M$
+\end_inset
+
+为
+\begin_inset Formula $M=I-P=I-X(X'X)^{-1}X'$
+\end_inset
+
+，其中
+\begin_inset Formula $I$
+\end_inset
+
+为单位阵（对角线元素为1，其他为0）。这样
+\begin_inset Formula $M$
+\end_inset
+
+又有什么性质呢？显然
+\begin_inset Formula $MY=(I-P)Y=Y-\hat{Y}=\varepsilon$
+\end_inset
+
+，也就是说
+\begin_inset Formula $M$
+\end_inset
+
+对
+\begin_inset Formula $Y$
+\end_inset
+
+的效果是得到误差项。而与此同时，
+\begin_inset Formula $M$
+\end_inset
+
+对于
+\begin_inset Formula $X$
+\end_inset
+
+的作用就是
+\begin_inset Formula $MX=(I-P)X=X-X=0$
+\end_inset
+
+，所以称为消灭矩阵嘛。继续，进行转置，则
+\begin_inset Formula $M'=(I-P)'=I-P=M$
+\end_inset
+
+，所以我们还有
+\begin_inset Formula $M^{2}=M'M=(I-P)(I-P)=I-P-P+P=I-P=M$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+OLS估计值的方差
+\end_layout
+
+\begin_layout Standard
+\align left
+再次友情提醒，
+\begin_inset Formula $X$
+\end_inset
+
+不是随机变量，所以不要跟我纠结为什么没有条件期望公式之类的东西...
+\end_layout
+
+\begin_layout Standard
+\align left
+扰动项服从
+\begin_inset Formula $N(0,\sigma)$
+\end_inset
+
+时，或者大样本下，OLS估计量的方差为：
+\end_layout
+
+\begin_layout Standard
+\align left
+\begin_inset Formula 
+\[
+Var(\hat{\beta})=E[(\hat{\beta}-\beta)(\hat{\beta}-\beta)']=E[(X'X)^{-1}X'\varepsilon][(X'X)^{-1}X'\varepsilon]'=(X'X)^{-1}E(\varepsilon\varepsilon')=s_{1}^{2}(X'X)^{-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align left
+这里 
+\begin_inset Formula $s_{1}^{2}$
+\end_inset
+
+为样本方差，所以其分布为： 
+\begin_inset Formula $\hat{\beta}\sim N(\beta,s_{1}^{2}(X'X)^{-1})$
+\end_inset
+
+。这样一来，就有了一个t检验：
+\end_layout
+
+\begin_layout Standard
+\align left
+\begin_inset Formula 
+\[
+t=\frac{\beta-0}{s_{1}^{2}(X'X)^{-1}}\sim t_{N-K-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align left
+大样本下，就直接用正态检验好了。此外，如果我们进一步的有更多的同时检验的约束条件，那就是联合检验F。这个就不赘述了...
+\end_layout
+
+\begin_layout Subsection
+高斯-马尔可夫定理
+\end_layout
+
+\begin_layout Standard
+\align left
+顺便还证了一下高斯-马尔可夫定理...这个不像OLS，每次我可记不住他的证明，每次都是现翻书...
+\end_layout
+
+\begin_layout Standard
+\align left
+我就直接抄wiki了。
+\end_layout
+
+\begin_layout Standard
+\align left
+选择另外一个线性估计量
+\begin_inset Formula $\tilde{\beta}=CY$
+\end_inset
+
+，然后
+\begin_inset Formula $C$
+\end_inset
+
+可以写为
+\begin_inset Formula $(X'X)^{-1}X'+D$
+\end_inset
+
+，则
+\begin_inset Formula $D$
+\end_inset
+
+为
+\begin_inset Formula $k*n$
+\end_inset
+
+的非空矩阵。
+\end_layout
+
+\begin_layout Standard
+\align left
+那么这个估计量
+\begin_inset Formula $\tilde{\beta}$
+\end_inset
+
+的期望是 ：
+\end_layout
+
+\begin_layout Standard
+\align left
+\begin_inset Formula 
+\begin{align}
+E(CY) & =E(((X'X)^{-1}X'+D)(X\beta+\varepsilon))\\
+ & =((X'X)^{-1}X'+D)X\beta+((X'X)^{-1}X'+D)\underbrace{E(\varepsilon)}_{0}\\
+ & =(X'X)^{-1}X'X\beta+DX\beta\\
+ & =(I_{k}+DX)\beta.
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align left
+所以，为了保证
+\begin_inset Formula $\tilde{\beta}$
+\end_inset
+
+无偏，则必有
+\begin_inset Formula $DX=0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\align left
+继续求方差：
+\end_layout
+
+\begin_layout Standard
+\align left
+\begin_inset Formula 
+\begin{align}
+V(\tilde{\beta}) & =V(CY)=CV(Y)C'=\sigma^{2}CC'\\
+ & =\sigma^{2}((X'X)^{-1}X'+D)(X(X'X)^{-1}+D')\\
+ & =\sigma^{2}((X'X)^{-1}X'X(X'X)^{-1}+(X'X)^{-1}X'D'+DX(X'X)^{-1}+DD')\\
+ & =\sigma^{2}(X'X)^{-1}+\sigma^{2}(X'X)^{-1}(\underbrace{DX}_{0})'+\sigma^{2}\underbrace{DX}_{0}(X'X)^{-1}+\sigma^{2}DD'\\
+ & =\underbrace{\sigma^{2}(X'X)^{-1}}_{V(\hat{\beta})}+\sigma^{2}DD'.
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align left
+\begin_inset Formula $DD'$
+\end_inset
+
+是一个半正定矩阵，
+\begin_inset Formula $V(\tilde{\beta})$
+\end_inset
+
+肯定要比
+\begin_inset Formula $V(\hat{\beta})$
+\end_inset
+
+大~得证。
+\end_layout
+
+\begin_layout Subsection
+变量选择与收缩方法
+\end_layout
+
+\begin_layout Standard
+\align left
+为了降低测试误差（减少函数的复杂度），有时候会放弃无偏性而进行变量选择。这里首先就是Ridge OLS（岭回归）。还是算一下这个东西好了。
+\end_layout
+
+\begin_layout Standard
+\align left
+岭回归就是对估计量另外加一个约束条件，所以很自然的想到拉格朗日乘子法。ridge regression的目标函数为，
+\end_layout
+
+\begin_layout Standard
+\align left
+\begin_inset Formula 
+\[
+\hat{\beta}=\arg\min\sum(y-\hat{y})^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align left
+\begin_inset Formula 
+\[
+s.t.\sum\hat{\beta}^{2}\leq k
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align left
+可以重写为
+\end_layout
+
+\begin_layout Standard
+\align left
+\begin_inset Formula 
+\[
+\hat{\beta}=\arg\min(\sum(y-\hat{y})^{2}+\lambda(\hat{\beta}^{2}-k))
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align left
+记 
+\begin_inset Formula $\mathcal{L}=\sum(y-\hat{y})^{2}+\lambda(\hat{\beta}^{2}-k)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align left
+这样我们就得到两个一阶条件：
+\end_layout
+
+\begin_layout Standard
+\align left
+\begin_inset Formula $\frac{\partial L}{\partial\beta}=X'(X\hat{\beta}-Y)+\lambda\hat{\beta}=0$
+\end_inset
+
+和 
+\begin_inset Formula $\frac{\partial L}{\partial\lambda}=\hat{\beta}^{2}-k=0$
+\end_inset
+
+，所以有：
+\end_layout
+
+\begin_layout Standard
+\align left
+\begin_inset Formula $\hat{\beta}=(X'X+\lambda I)^{-1}X'Y$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align left
+这里还可以看出，
+\begin_inset Formula $\lambda$
+\end_inset
+
+的取值都是对应
+\begin_inset Formula $k$
+\end_inset
+
+的。这里可以看出，约束条件是二阶范式，Lasso则是把 
+\begin_inset Formula $L_{2}$
+\end_inset
+
+改成 
+\begin_inset Formula $L_{1}$
+\end_inset
+
+，已经没有解析解了...
+\end_layout
+
+\begin_layout Standard
+\align left
+至于为什么叫收缩方法，可以将X进行奇异值分解，然后可以得出
+\begin_inset Formula $\hat{Y}_{ridge}$
+\end_inset
+
+的方差将变小...我就不写证明了，感觉这一块儿讲的也不是很透彻。
+\end_layout
+
+\begin_layout Section
+Nov 12
+\end_layout
+
+\begin_layout Standard
+\align left
+鉴于我上周写的
+\begin_inset CommandInset href
+LatexCommand href
+name "课堂笔记4"
+target "http://www.loyhome.com/%e2%89%aa%e7%bb%9f%e8%ae%a1%e5%ad%a6%e4%b9%a0%e7%b2%be%e8%a6%81the-elements-of-statistical-learning%e2%89%ab%e8%af%be%e5%a0%82%e7%ac%94%e8%ae%b0%ef%bc%88%e5%9b%9b%ef%bc%89/"
+
+\end_inset
+
+让很多人反映太枯燥、太无聊（全是公式...可是这就是笔记嘛，又不是写科普文），我努力让这周的笔记除了公式之外多一点直觉和应用层面的点评。
+\end_layout
+
+\begin_layout Standard
+\align left
+其实
+\begin_inset CommandInset href
+LatexCommand href
+name "笔记1"
+target "http://www.loyhome.com/%e2%89%aa%e7%bb%9f%e8%ae%a1%e5%ad%a6%e4%b9%a0%e7%b2%be%e8%a6%81the-elements-of-statistical-learning%e2%89%ab%e8%af%be%e5%a0%82%e7%ac%94%e8%ae%b0%ef%bc%88%e4%b8%80%ef%bc%89/"
+
+\end_inset
+
+到
+\begin_inset CommandInset href
+LatexCommand href
+name "笔记2"
+target "http://www.loyhome.com/%e2%89%aa%e7%bb%9f%e8%ae%a1%e5%ad%a6%e4%b9%a0%e7%b2%be%e8%a6%81the-elements-of-statistical-learning%e2%89%ab%e8%af%be%e5%a0%82%e7%ac%94%e8%ae%b0%ef%bc%88%e4%ba%8c%ef%bc%89/"
+
+\end_inset
+
+中说了很多回归和分类器的不同了，那么在经历了线性回归方法之后，就来说说分类器好了。我原来一直觉得回归和分类器没有什么本质不同的...主要是最常用的分类器logit和p
+robit都是我在学计量的时候学的，那个时候老师只是简单的说，这两个和OLS都是一致的，只是我们想让预测值在0～1之内所以做一下变换。而且我们那个时候也不叫他们
+分类器，而是叫他们“离散被解释变量模型”。前几个月的时候，看data mining的东西，看得晕晕乎乎的，就跑去问精通此类模型的同事MJ，让他跟我科普了一下午为
+什么这两个模型大家更经常称之为分类器...汗颜啊，那个时候我才知道原来machine learning是先分supervised learning and
+ unsupervised learning，然后才是 regression v.s.
+ classification, and clustering...疏通了脉络之后，再看
+\emph on
+The Elements of Statistical Learning
+\emph default
+ 这本书，就觉得顺畅多了。以前只是零零散散的接触一个个孤立的模型，没有找出一个脉络串起来过，自然也就不知道分别适用于什么场景。
+\end_layout
+
+\begin_layout Standard
+\align left
+其实我挺想说的是，从econometrics到data mining，远远没有想象的那么简单。数学工具上或许很顺畅，但是思维上的转变还是需要时间和实践的。真是为
+难坏了我这个学经济学出身的孩子（其实话说回来，我好好的不去研究经济学，好奇什么data mining呀~只能聊以一句“殊途同归”来搪塞自己，对嘛，反正都是doc
+tor of philosophy, 只要是科学，本质的思考方式应该是相通的）。不过搞清楚之后，还是觉得很好玩的——以前是雾里看花，觉得什么都漂亮；现在渐渐的能
+够分清楚这些美丽之间的差异了，也算是个小进步吧。
+\end_layout
+
+\begin_layout Standard
+\align left
+再有个小废话...记得上小学的时候，老师问大家“长大了想做什么呀？”，我们总是会特别有出息的回答“科学家~”。那个时候有门课叫做《自然》，老师总给我们讲各种各样的发明
+，让我们一度觉得这个世界上的问题都被解决完了，还当什么科学家啊。然后老师就给我们讲哥德巴赫猜想，大意是世间还有那么几个悬而未决的皇冠问题，等待大家长大了去攻克。
+后来，越读书越发现，有那么多问题人们是不知道答案的，只是从 ambiguity 
+\begin_inset Formula $\rightarrow$
+\end_inset
+
+uncertainty
+\begin_inset Formula $\rightarrow$
+\end_inset
+
+possibility
+\begin_inset Formula $\rightarrow$
+\end_inset
+
+probability
+\begin_inset Formula $\rightarrow$
+\end_inset
+
+certainty (law)一步步的走下去。有那么多问题，其实都是悬而未决的哲学问题，等待着聪明的大脑去回答。这也是越读书越觉得兴奋的缘故吧，越来越多的时候老
+师会被问倒，然后说“不知道”...然后好奇心就又开始勃勃生长...然后又发现更多的很好玩但没有答案的问题...周而复始，有意思的很。
+\end_layout
+
+\begin_layout Standard
+\align left
+-------满足大家的八卦之心之后，笔记开始-------
+\end_layout
+
+\begin_layout Subsection
+线性分类器
+\end_layout
+
+\begin_layout Standard
+\align left
+对应原书第四章。
+\end_layout
+
+\begin_layout Standard
+\align left
+先是来一点直觉上的东西：分类器顾名思义，就是把一堆样本归到不同的类别中去。那么这类模型的几何直觉是什么呢？很简单，空间分割嘛。最直白的，我们有一群人，组成了一个
+大的群体。然后现在要把大家归为男女两类，那么空间自然就是被分割为两个子空间——男和女了。
+\end_layout
+
+\begin_layout Standard
+\align left
+线性分类器是什么呢？分割男和女的时候，可能分割是三个一群，五个一簇的，所以非要画分割的界限的话，八成是山路十八弯的...我们以前说过，这类的模型问题就是可能复杂度比较
+高（比如参数的个数较多），导致就算训练误差小，测试误差不一定小。所以呢，我们希望这个分割界限是直线的（二维平面下）、或者平面的（三维空间中），或者超平面的（高位
+空间中），这样就比较清晰明了的感觉了。 
+\end_layout
+
+\begin_layout Subsection
+线性分类器：logit模型（或称logistic regression） 
+\end_layout
+
+\begin_layout Standard
+\align left
+这里也不完全是按照吴老师上课讲的东西了，因为回头再看这本书会发现书中还有一些很好玩的直觉很强的东西。错过不免可惜，一并收纳。
+\end_layout
+
+\begin_layout Standard
+\align left
+首先换一下记号～我们在前面都用$Y$代表被解释变量，从现在开始对于分类问题，我们改用
+\begin_inset Formula $G$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\align left
+logit模型下，考虑最简单的分为两类，我们有
+\end_layout
+
+\begin_layout Standard
+\align left
+\begin_inset Formula $\Pr(G=1|X=x)=\frac{\exp(X\beta)}{1+\exp(X\beta)}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align left
+\begin_inset Formula $\Pr(G=2|X=x)=\frac{1}{1+\exp(X\beta)}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align left
+所以有
+\begin_inset Formula $\log\frac{\Pr(G=1|X=x)}{\Pr(G=2|X=x)}=X\beta$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align left
+这样，分别属于这两组之间的比例就可以找到一个线性的边界了（注：log为单调变换~不影响结果）。这样变换的目的其实无非是，保证
+\begin_inset Formula $\Pr(G=1|X=x)+\Pr(G=2|X=x)=1$
+\end_inset
+
+，而且两个比例之间存在着一种线性的、或者可以通过单调变换成为线性的关系。类似的当然是大名鼎鼎的probit模型，思路是类似的。 
+\end_layout
+
+\begin_layout Subsection
+损失函数
+\end_layout
+
+\begin_layout Standard
+\align left
+显然线性分类器下，在有很多类的情况中，损失函数定义为OLS的残差平方和是没有多大意义的——分类取值只是一个名义量。所以，这里用0-1损失函数：如果
+\begin_inset Formula $\hat{G}=f(x)=G$
+\end_inset
+
+，那么损失函数=0；否则，就是没预测准，损失函数=1。写为数学形式，就是损失函数
+\begin_inset Formula $\mathcal{L}$
+\end_inset
+
+定义为：
+\end_layout
+
+\begin_layout Standard
+\align left
+\begin_inset Formula $\mathcal{L}(G,f(x))=\begin{cases}
+0G=f(x)\\
+1G\neq f(x)
+\end{cases}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align left
+所以我们的目标就是，最小化损失函数的期望：
+\end_layout
+
+\begin_layout Standard
+\align left
+\begin_inset Formula $\min\: E(\mathcal{L})=E_{x}[E_{G|x}(\mathcal{L}(G,f(x))|x)]=1-\Pr(G|x)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align left
+(条件期望迭代)。 
+\end_layout
+
+\begin_layout Subsection
+LDA：linear discriminant analysis(贝叶斯意义下)
+\end_layout
+
+\begin_layout Standard
+\align left
+从贝叶斯的角度，我们有
+\begin_inset Formula $\Pr(G=k|X=x)=\frac{\Pr(G,X)}{\Pr(X)}=\frac{f_{k}(x)\pi_{k}}{\sum_{k=1}^{K}f_{k}(x)\pi_{k}}$
+\end_inset
+
+，
+\begin_inset Formula $\pi_{k}$
+\end_inset
+
+为
+\begin_inset Formula $k$
+\end_inset
+
+出现的概率。
+\end_layout
+
+\begin_layout Standard
+\align left
+假设
+\begin_inset Formula $X$
+\end_inset
+
+服从联合正态分布
+\begin_inset Formula $N(\mathbf{\mu}_{,}\sum)$
+\end_inset
+
+，那么我们有
+\begin_inset Formula $f_{k}(x)=\frac{1}{(2\pi)^{p/2}|\sum_{k}|^{1/2}}e^{-\frac{1}{2}(x-\mu_{k})'\sum_{k}^{-1}(x-\mu_{k})}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\align left
+再假设协方差矩阵
+\begin_inset Formula $\sum_{k}=\sum,\forall k$
+\end_inset
+
+，所以我们比较两类
+\begin_inset Formula $k$
+\end_inset
+
+和
+\begin_inset Formula $l$
+\end_inset
+
+的时候有：
+\end_layout
+
+\begin_layout Standard
+\align left
+\begin_inset Formula $\log\frac{\Pr(G=k|X=x)}{\Pr(G=l|X=x)}=\log\frac{f_{k}(x)}{f_{l}(x)}+\log\frac{\pi_{k}}{\pi_{l}}=\log\frac{\pi_{k}}{\pi_{l}}-\frac{1}{2}(\mu_{k}-\mu_{l})'\Sigma^{-1}(\mu_{k}-\mu_{l})+x'\Sigma^{-1}(\mu_{k}-\mu_{l})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align left
+这样就形成了一个x的线性方程，所以我们找到了一个超平面，实现了LDA。
+\end_layout
+
+\begin_layout Standard
+\align left
+实践中我们需要估计联合正态分布的参数，一般有
+\begin_inset Formula $\hat{\pi_{k}}=N_{k}/N$
+\end_inset
+
+，其中
+\begin_inset Formula $N_{k}$
+\end_inset
+
+为分类
+\begin_inset Formula $k$
+\end_inset
+
+出现的样本数；
+\begin_inset Formula $\hat{\mu_{k}}=\sum_{g_{i}=k}x_{i}/N_{k}$
+\end_inset
+
+，即这
+\begin_inset Formula $N_{k}$
+\end_inset
+
+个样本中，
+\begin_inset Formula $x$
+\end_inset
+
+观测值的平均数；
+\begin_inset Formula $\hat{\Sigma}=\sum_{k=1}^{K}\sum_{g_{i}=k}(x_{i}-\hat{\mu_{k}})(x_{i}-\hat{\mu_{k}})'/(N-K)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+Fisher视角下的分类器
+\end_layout
+
+\begin_layout Standard
+\align left
+Fisher提出的观点为，分类器应该尽量使不同类别之间距离较远，而相同类别距其中心较近。比如我们有两群，中心分别为
+\begin_inset Formula $\mu_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\mu_{2}$
+\end_inset
+
+，那么我们希望
+\begin_inset Formula $\left\Vert \mu_{1}-\mu_{2}\right\Vert ^{2}$
+\end_inset
+
+尽量大，同时群内方差
+\begin_inset Formula $\sum_{1}+\sum_{2}$
+\end_inset
+
+尽量小。通过对
+\begin_inset Formula $x$
+\end_inset
+
+进行投影到
+\begin_inset Formula $z=xw$
+\end_inset
+
+，我们可以化简的得到
+\begin_inset Formula $\left\Vert \mu_{1}-\mu_{2}\right\Vert ^{2}=w'S_{between}w$
+\end_inset
+
+且
+\begin_inset Formula $\sum_{1}+\sum_{2}=w'(S_{1}+S_{2})w=w'S{}_{within}w$
+\end_inset
+
+。这样一来，我们的准则就是：
+\end_layout
+
+\begin_layout Standard
+\align left
+\begin_inset Formula 
+\[
+\max\frac{w'S_{between}w}{w'S_{within}w}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align left
+由于
+\begin_inset Formula $S_{within}$
+\end_inset
+
+是正定阵，所以我们可以进一步写为
+\end_layout
+
+\begin_layout Standard
+\align left
+\begin_inset Formula 
+\[
+\max\frac{u'S_{within}^{-1/2}S_{between}S_{within}^{-1/2}u}{\left\Vert u\right\Vert ^{2}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align left
+其中
+\begin_inset Formula $u$
+\end_inset
+
+是
+\begin_inset Formula $S_{within}^{-1/2}S_{between}S_{within}^{-1/2}$
+\end_inset
+
+的特征向量。最终可以求的，最优的
+\begin_inset Formula $w^{*}$
+\end_inset
+
+正是
+\begin_inset Formula $S_{within}^{-1/2}S_{between}S_{within}^{-1/2}$
+\end_inset
+
+的最大特征向量。
+\end_layout
+
+\begin_layout Standard
+\align left
+说实话，我对LDA（或者QDA）的理解都非常有限...这本书里面还有一节说到LDA和logit怎么选，我也是大概看了一下没有特别的看明白...笔记只是如实记录，海涵。暂时还
+不知道讲到Fisher到底是想讲什么...理解力好有限，唉。
+\end_layout
+
+\begin_layout Standard
+\align left
+------最后的碎碎念------
+\end_layout
+
+\begin_layout Standard
+\align left
+除了统计学习精要，Coursera的Model Thinking也终于结课了，做完了期末考试卷，感觉心里空空的。这门课真的是开的非常深入浅出，覆盖了这么多学科、
+问题的各种模型，非常有助于逻辑思考和抽象。只是多少有些遗憾的，很多东西来不及细细回味，听过了视频就忘了，没有努力的去理解那些模型背后的逻辑。这也是导致最终的期末
+考试做的不怎么好的缘故——我不想去翻课堂视频或者笔记，只是想考验一下自己对于这些模型的理解和记忆能力。事实证明，除了那些跟经济学或者数学紧密相关的模型，其他的都
+多多少少记得不是那么清晰了。过阵子应该好好整理一下这门课的笔记，算作是一个良好的回顾吧。
+\end_layout
+
+\begin_layout Standard
+\align left
+不知道为什么，工作之后再去学这些东西，真的感觉力不从心的时刻多了很多。这半年只有这么区区两门课，就让我觉得有时候不得不强迫自己一下赶上进度，强迫的手段之一就是在
+落园开始写连载（大家容忍，谢谢~）。不过为了保持一个基本的生活质量，还是应该不时看看这些新东西的，要不生活都腐朽了。
+\end_layout
+
+\end_body
+\end_document
